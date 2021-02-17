@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -716,9 +716,7 @@ namespace MaterialDesignThemes.Wpf
         }
 
         private void CloseDialogCanExecute(object sender, CanExecuteRoutedEventArgs canExecuteRoutedEventArgs)
-        {
-            canExecuteRoutedEventArgs.CanExecute = CurrentSession != null;
-        }
+            => canExecuteRoutedEventArgs.CanExecute = CurrentSession != null;
 
         private void CloseDialogHandler(object sender, ExecutedRoutedEventArgs executedRoutedEventArgs)
         {
@@ -730,19 +728,13 @@ namespace MaterialDesignThemes.Wpf
         }
 
         private string SelectState()
-        {
-            return IsOpen ? OpenStateName : ClosedStateName;
-        }
+            => IsOpen ? OpenStateName : ClosedStateName;
 
         private void OnUnloaded(object sender, RoutedEventArgs routedEventArgs)
-        {
-            LoadedInstances.Remove(this);
-        }
+            => LoadedInstances.Remove(this);
 
         private void OnLoaded(object sender, RoutedEventArgs routedEventArgs)
-        {
-            LoadedInstances.Add(this);
-        }
+            => LoadedInstances.Add(this);
 
     }
 }

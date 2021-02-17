@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Input;
 using MaterialDesignThemes.UITests.Samples.DialogHost;
 using XamlTest;
 using Xunit;
@@ -43,6 +44,32 @@ namespace MaterialDesignThemes.UITests.WPF.DialogHost
             await Wait.For(async () => await overlay.GetVisibility() != Visibility.Visible, retry);
             await testOverlayButton.Click();
             await Wait.For(async () => Assert.Equal("Clicks: 2", await resultTextBlock.GetText()), retry);
+
+            recorder.Success();
+        }
+
+        [Fact]
+        public async Task OnDialogClosed_WithDefaultButton_UpdatesBoundTextBox()
+        {
+            await using var recorder = new TestRecorder(App);
+            IVisualElement dialogHost = await LoadUserControl<WithDefaultButton>();
+
+            IVisualElement showDialogButton = await dialogHost.GetElement("ShowDialogButton");
+            await showDialogButton.Click();
+
+            IVisualElement inputTextBox = await Wait.For(async () => await dialogHost.GetElement("InputTextBox"));
+            await Wait.For(async () => await inputTextBox.GetIsKeyboardFocused());
+
+            await inputTextBox.SendInput(new KeyboardInput("123"));
+            await inputTextBox.SendInput(new KeyboardInput(Key.Enter));
+
+            await Wait.For(async () => await dialogHost.GetProperty<bool>(Wpf.DialogHost.IsOpenProperty) == false);
+
+            IVisualElement textResultTextBlock = await dialogHost.GetElement("TextResult");
+
+            Assert.Equal("123", await textResultTextBlock.GetText());
+
+            recorder.Success();
         }
     }
 }
