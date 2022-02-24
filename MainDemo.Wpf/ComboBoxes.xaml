@@ -22,6 +22,649 @@
             <Setter Property="Margin" Value="16 0 0 0" />
             <Setter Property="VerticalAlignment" Value="Bottom" />
         </Style>
+
+        <SolidColorBrush x:Key="SomeBackground" Color="Green" />
+        <SolidColorBrush x:Key="SomeForeground" Color="Yellow" />
+        <SolidColorBrush x:Key="SomeHoverColor" Color="Red" />
+        <SolidColorBrush x:Key="SomeSelectColor" Color="Blue" />
+        <SolidColorBrush x:Key="SomeBorderColor" Color="Aqua" />
+        <SolidColorBrush x:Key="Blue" Color="LightBlue" />
+        <SolidColorBrush x:Key="Item" Color="Fuchsia" />
+
+        <ControlTemplate x:Key="MainPopupContentTemplate" TargetType="ContentControl">
+            <Grid MinWidth="{Binding Path=ContentMinWidth, RelativeSource={RelativeSource AncestorType=materialDesign:ComboBoxPopup}}"
+          Margin="{Binding Path=ContentMargin, RelativeSource={RelativeSource AncestorType=materialDesign:ComboBoxPopup}}">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <!-- ComboBox popup container -->
+                <Border CornerRadius="3"
+                BorderBrush="{DynamicResource SomeBorderColor}"
+                BorderThickness="2"
+                Background="{DynamicResource SomeBackground}">
+                    <Grid SnapsToDevicePixels="True">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <Border Grid.Row="0" Height="{StaticResource PopupTopBottomMargin}" />
+                        <ContentPresenter Grid.Row="1"/>
+                        <Border Grid.Row="2" Height="{StaticResource PopupTopBottomMargin}" />
+                    </Grid>
+                </Border>
+            </Grid>
+        </ControlTemplate>
+
+        <Style TargetType="{x:Type ComboBoxItem}" x:Key="ComboBoxItemContainerStyle"
+               BasedOn="{StaticResource MaterialDesignComboBoxItemStyle}">
+            <Setter Property="Template">
+                <Setter.Value>
+
+                    <!-- ComboBoxItem container -->
+                    <ControlTemplate TargetType="{x:Type ComboBoxItem}">
+                        <Border x:Name="myBorder"
+                                Margin="5,0,5,0"
+                                Padding="8,0,8,1"
+                                CornerRadius="3"
+                                MinHeight="26">
+                            <ContentPresenter VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" TargetName="myBorder" Value="{DynamicResource SomeHoverColor}" />
+                            </Trigger>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter Property="Background" TargetName="myBorder" Value="{DynamicResource SomeSelectColor}" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Foreground" Value="{DynamicResource Text}" />
+            <Style.Triggers>
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="Foreground" Value="White" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <ControlTemplate TargetType="ComboBox" x:Key="ComboBoxWithHintTextTemplate">
+            <AdornerDecorator>
+                <Grid>
+
+                    <Border x:Name="templateRoot"
+                    Background="{TemplateBinding Background}"
+                    BorderBrush="{TemplateBinding BorderBrush}"
+                    BorderThickness="{TemplateBinding BorderThickness}"
+                    CornerRadius="{Binding Path=(materialDesign:TextFieldAssist.TextFieldCornerRadius), RelativeSource={RelativeSource TemplatedParent}}"
+                    SnapsToDevicePixels="True"
+                    materialDesign:BottomDashedLineAdorner.IsAttached="False">
+
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="0"
+                                          MinWidth="{DynamicResource {x:Static SystemParameters.VerticalScrollBarWidthKey}}" />
+                            </Grid.ColumnDefinitions>
+
+                            <Border Grid.Column="0"
+                            Grid.Row="0"
+                            Padding="{TemplateBinding Padding}">
+
+                                <Grid x:Name="InnerRoot"
+                              SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
+                              UseLayoutRounding="{TemplateBinding UseLayoutRounding}"
+                              HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                              VerticalAlignment="{TemplateBinding VerticalContentAlignment}">
+
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <TextBlock x:Name="PrefixTextBlock"
+                                       Grid.Column="0"
+                                       FontSize="{TemplateBinding FontSize}"
+                                       Opacity="{TemplateBinding materialDesign:HintAssist.HintOpacity}"
+                                       Text="{TemplateBinding materialDesign:TextFieldAssist.PrefixText}"
+                                       IsHitTestVisible="False" />
+
+                                    <ContentPresenter x:Name="contentPresenter"
+                                              Grid.Column="1"
+                                              Content="{TemplateBinding SelectionBoxItem}"
+                                              ContentStringFormat="{TemplateBinding SelectionBoxItemStringFormat}"
+                                              ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
+                                              ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}"
+                                              IsHitTestVisible="False"
+                                              Margin="{TemplateBinding materialDesign:TextFieldAssist.TextBoxViewMargin}" />
+
+                                    <TextBox x:Name="PART_EditableTextBox"
+                                     Grid.Column="1"
+                                     MinWidth="10"
+                                     IsReadOnly="{TemplateBinding IsReadOnly}"
+                                     HorizontalAlignment="Stretch"
+                                     HorizontalContentAlignment="Stretch"
+                                     Style="{StaticResource MaterialDesignComboBoxEditableTextBox}"
+                                     CaretBrush="{TemplateBinding BorderBrush}"
+                                     Visibility="Collapsed" />
+
+                                    <materialDesign:SmartHint x:Name="Hint"
+                                                      Grid.Column="1"
+                                                      HintProxy="{Binding RelativeSource={RelativeSource TemplatedParent}, Converter={x:Static materialDesign:HintProxyFabricConverter.Instance}}"
+                                                      FontSize="{TemplateBinding FontSize}"
+                                                      FontFamily="{TemplateBinding materialDesign:HintAssist.FontFamily}"
+                                                      SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
+                                                      UseLayoutRounding="{TemplateBinding UseLayoutRounding}"
+                                                      UseFloating="{TemplateBinding materialDesign:HintAssist.IsFloating}"
+                                                      FloatingScale="{TemplateBinding materialDesign:HintAssist.FloatingScale}"
+                                                      FloatingOffset="{TemplateBinding materialDesign:HintAssist.FloatingOffset}"
+                                                      HintOpacity="{TemplateBinding materialDesign:HintAssist.HintOpacity}"
+                                                      Margin="{TemplateBinding materialDesign:TextFieldAssist.TextBoxViewMargin}">
+                                        <materialDesign:SmartHint.Hint>
+                                            <Border x:Name="HintBackgroundBorder"
+                                            Background="{TemplateBinding materialDesign:HintAssist.Background}"
+                                            CornerRadius="2">
+                                                <ContentPresenter x:Name="HintWrapper"
+                                                          Content="{TemplateBinding materialDesign:HintAssist.Hint}" />
+                                            </Border>
+                                        </materialDesign:SmartHint.Hint>
+                                    </materialDesign:SmartHint>
+
+                                    <TextBlock x:Name="SuffixTextBlock"
+                                       Grid.Column="2"
+                                       FontSize="{TemplateBinding FontSize}"
+                                       Opacity="{TemplateBinding materialDesign:HintAssist.HintOpacity}"
+                                       Text="{TemplateBinding materialDesign:TextFieldAssist.SuffixText}"
+                                       IsHitTestVisible="False"
+                                       Margin="{Binding ActualWidth, ElementName=PART_ClearButton, Converter={StaticResource DoubleToThicknessConverter}, ConverterParameter={x:Static Dock.Right}}" />
+                                </Grid>
+                            </Border>
+                        </Grid>
+                    </Border>
+
+                    <materialDesign:Underline x:Name="Underline"
+                                      IsActive="{Binding ElementName=PART_EditableTextBox, Path=IsKeyboardFocused}"
+                                      materialDesign:TextFieldAssist.UnderlineBrush="{TemplateBinding materialDesign:TextFieldAssist.UnderlineBrush}"
+                                      Visibility="{TemplateBinding materialDesign:TextFieldAssist.DecorationVisibility}"
+                                      CornerRadius="{TemplateBinding materialDesign:TextFieldAssist.UnderlineCornerRadius}"
+                                      Background="{TemplateBinding materialDesign:TextFieldAssist.UnderlineBrush}" />
+
+                    <Canvas VerticalAlignment="Bottom">
+                        <TextBlock Canvas.Top="2"
+                           FontSize="{TemplateBinding materialDesign:HintAssist.HelperTextFontSize}"
+                           MaxWidth="{Binding ActualWidth, ElementName=toggleButton}"
+                           Opacity="{TemplateBinding materialDesign:HintAssist.HintOpacity}"
+                           Text="{TemplateBinding materialDesign:HintAssist.HelperText}" />
+                    </Canvas>
+
+                    <materialDesign:ComboBoxPopup x:Name="PART_Popup"
+                                          Grid.Column="0"
+                                          AllowsTransparency="True"
+                                          ClassicMode="True"
+                                          ClassicContentTemplate="{StaticResource MainPopupContentTemplate}"
+                                          materialDesign:ColorZoneAssist.Mode="{Binding Path=(materialDesign:ColorZoneAssist.Mode), RelativeSource={RelativeSource TemplatedParent}}"
+                                          ContentMargin="6,0,6,6"
+                                          ContentMinWidth="{Binding Path=ActualWidth, ElementName=templateRoot}"
+                                          DefaultVerticalOffset="-1"
+                                          DownVerticalOffset="0"
+                                          Focusable="False"
+                                          HorizontalOffset="0"
+                                          IsOpen="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
+                                          Placement="Custom"
+                                          PlacementTarget="{Binding ElementName=templateRoot}"
+                                          PopupAnimation="Fade"
+                                          RelativeHorizontalOffset="-6"
+                                          SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
+                                          UseLayoutRounding="{TemplateBinding UseLayoutRounding}"
+                                          VerticalOffset="0"
+                                          UpVerticalOffset="15">
+
+                        <materialDesign:ComboBoxPopup.Style>
+                            <Style TargetType="materialDesign:ComboBoxPopup">
+                                <Setter Property="CornerRadius" Value="0,0,4,4" />
+                            </Style>
+                        </materialDesign:ComboBoxPopup.Style>
+
+                        <ContentControl>
+                            <!-- Scroll viewer which contains all items -->
+                            <ScrollViewer MaxHeight="{TemplateBinding MaxDropDownHeight}"
+                                  MinHeight="1"
+                                  Background="{DynamicResource SomeBackground}">
+                                <ItemsPresenter x:Name="ItemsPresenter"
+                                        KeyboardNavigation.DirectionalNavigation="Contained" />
+                            </ScrollViewer>
+                        </ContentControl>
+
+                    </materialDesign:ComboBoxPopup>
+
+                    <ToggleButton x:Name="toggleButton"
+                          IsChecked="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
+                          Style="{StaticResource MaterialDesignComboBoxToggleButton}"
+                          BorderBrush="{TemplateBinding BorderBrush}"
+                          Padding="{TemplateBinding Padding}"
+                          Margin="{Binding ElementName=InnerRoot, Path=Margin}" />
+
+                    <Button x:Name="PART_ClearButton"
+                    Style="{StaticResource MaterialDesignToolButton}"
+                    Height="Auto"
+                    VerticalAlignment="Stretch"
+                    HorizontalAlignment="Right"
+                    Padding="0"
+                    Focusable="False">
+
+                        <Button.Margin>
+                            <MultiBinding Converter="{StaticResource ComboBoxClearButtonMarginConverter}">
+                                <Binding RelativeSource="{RelativeSource TemplatedParent}" Path="Padding" />
+                                <Binding RelativeSource="{RelativeSource TemplatedParent}" Path="BorderThickness" />
+                                <Binding ElementName="InnerRoot" Path="Margin" />
+                            </MultiBinding>
+                        </Button.Margin>
+
+                        <Button.Visibility>
+                            <MultiBinding Converter="{StaticResource ClearButtonVisibilityConverter}">
+                                <Binding RelativeSource="{RelativeSource TemplatedParent}" Path="(materialDesign:TextFieldAssist.HasClearButton)" />
+                                <Binding ElementName="Hint" Path="IsContentNullOrEmpty" />
+                            </MultiBinding>
+                        </Button.Visibility>
+
+                        <materialDesign:PackIcon Margin="0"
+                                         Kind="CloseCircle" />
+                    </Button>
+                </Grid>
+            </AdornerDecorator>
+
+            <ControlTemplate.Triggers>
+                <Trigger Property="materialDesign:TextFieldAssist.HasOutlinedTextField" Value="True">
+                    <Setter TargetName="templateRoot" Property="CornerRadius" Value="{Binding Path=(materialDesign:TextFieldAssist.TextFieldCornerRadius), RelativeSource={RelativeSource TemplatedParent}}" />
+                    <Setter TargetName="PART_Popup" Property="RelativeHorizontalOffset" Value="-6" />
+                    <Setter TargetName="PART_Popup" Property="DefaultVerticalOffset" Value="0" />
+                    <Setter TargetName="PART_Popup" Property="DownVerticalOffset" Value="0" />
+                    <Setter TargetName="PART_Popup" Property="UpVerticalOffset" Value="0" />
+                    <Setter TargetName="PART_Popup" Property="CornerRadius" Value="{Binding Path=(materialDesign:TextFieldAssist.TextFieldCornerRadius), RelativeSource={RelativeSource TemplatedParent}}" />
+                    <Setter TargetName="PART_Popup" Property="ContentMargin" Value="6,0,6,6" />
+                    <Setter TargetName="PART_Popup" Property="ContentMinWidth" Value="{Binding Path=ActualWidth, ElementName=templateRoot}" />
+                    <Setter TargetName="Underline" Property="Visibility" Value="Collapsed" />
+                    <Setter TargetName="Hint" Property="HintOpacity" Value="1" />
+                    <Setter TargetName="HintWrapper" Property="Opacity" Value="{Binding Path=(materialDesign:HintAssist.HintOpacity), RelativeSource={RelativeSource TemplatedParent}}" />
+                    <Setter TargetName="Hint" Property="FloatingOffset">
+                        <Setter.Value>
+                            <MultiBinding Converter="{StaticResource FloatingHintOffsetCalculationConverter}">
+                                <Binding RelativeSource="{RelativeSource TemplatedParent}" Path="FontFamily" />
+                                <Binding RelativeSource="{RelativeSource TemplatedParent}" Path="FontSize" />
+                                <Binding RelativeSource="{RelativeSource TemplatedParent}" Path="(materialDesign:HintAssist.FloatingScale)" />
+                                <Binding RelativeSource="{RelativeSource TemplatedParent}" Path="(materialDesign:HintAssist.FloatingOffset)" />
+                                <Binding RelativeSource="{RelativeSource TemplatedParent}" Path="ActualHeight" />
+                            </MultiBinding>
+                        </Setter.Value>
+                    </Setter>
+                </Trigger>
+
+                <Trigger Property="IsEditable" Value="True">
+                    <Setter TargetName="PART_EditableTextBox" Property="Visibility" Value="Visible" />
+                    <Setter TargetName="Underline" Property="Visibility" Value="{Binding Path=(materialDesign:TextFieldAssist.DecorationVisibility), RelativeSource={RelativeSource TemplatedParent}}" />
+                    <Setter TargetName="contentPresenter" Property="Visibility" Value="Collapsed" />
+                </Trigger>
+
+                <MultiTrigger>
+                    <MultiTrigger.Conditions>
+                        <Condition Property="IsGrouping" Value="True" />
+                        <Condition Property="VirtualizingPanel.IsVirtualizingWhenGrouping" Value="False" />
+                    </MultiTrigger.Conditions>
+                    <Setter Property="ScrollViewer.CanContentScroll" Value="False" />
+                </MultiTrigger>
+
+                <!--Hint-->
+                <MultiTrigger>
+                    <MultiTrigger.Conditions>
+                        <Condition Property="materialDesign:HintAssist.IsFloating" Value="True" />
+                        <Condition Property="materialDesign:TextFieldAssist.HasOutlinedTextField" Value="False" />
+                    </MultiTrigger.Conditions>
+                    <Setter TargetName="Hint" Property="FloatingOffset">
+                        <Setter.Value>
+                            <MultiBinding Converter="{StaticResource FloatingHintOffsetCalculationConverter}">
+                                <Binding RelativeSource="{RelativeSource TemplatedParent}" Path="FontFamily" />
+                                <Binding RelativeSource="{RelativeSource TemplatedParent}" Path="FontSize" />
+                                <Binding RelativeSource="{RelativeSource TemplatedParent}" Path="(materialDesign:HintAssist.FloatingScale)" />
+                                <Binding RelativeSource="{RelativeSource TemplatedParent}" Path="(materialDesign:HintAssist.FloatingOffset)" />
+                            </MultiBinding>
+                        </Setter.Value>
+                    </Setter>
+                    <Setter TargetName="InnerRoot" Property="Margin">
+                        <Setter.Value>
+                            <MultiBinding Converter="{StaticResource FloatingHintOffsetCalculationConverter}">
+                                <Binding RelativeSource="{RelativeSource TemplatedParent}" Path="FontFamily" />
+                                <Binding RelativeSource="{RelativeSource TemplatedParent}" Path="FontSize" />
+                                <Binding RelativeSource="{RelativeSource TemplatedParent}" Path="(materialDesign:HintAssist.FloatingScale)" />
+                                <Binding RelativeSource="{RelativeSource TemplatedParent}" Path="(materialDesign:HintAssist.FloatingOffset)" />
+                            </MultiBinding>
+                        </Setter.Value>
+                    </Setter>
+                </MultiTrigger>
+
+                <MultiTrigger>
+                    <MultiTrigger.Conditions>
+                        <Condition Property="materialDesign:TextFieldAssist.HasOutlinedTextField" Value="True" />
+                        <Condition Property="materialDesign:HintAssist.IsFloating" Value="True" />
+                        <Condition SourceName="Hint" Property="IsHintInFloatingPosition" Value="True" />
+                    </MultiTrigger.Conditions>
+                    <Setter TargetName="HintBackgroundBorder" Property="Padding" Value="4, 0" />
+                    <Setter Property="materialDesign:HintAssist.Background" Value="{DynamicResource MaterialDesignPaper}" />
+                </MultiTrigger>
+
+                <MultiTrigger>
+                    <MultiTrigger.Conditions>
+                        <Condition SourceName="Hint" Property="IsContentNullOrEmpty" Value="False" />
+                        <Condition SourceName="PART_EditableTextBox" Property="IsKeyboardFocused" Value="True" />
+                    </MultiTrigger.Conditions>
+                    <Setter TargetName="Hint" Property="Foreground" Value="{Binding Path=(materialDesign:HintAssist.Foreground), RelativeSource={RelativeSource TemplatedParent}}" />
+                    <Setter TargetName="Hint" Property="HintOpacity" Value="1" />
+                </MultiTrigger>
+
+
+                <!--IsEnabled-->
+                <MultiTrigger>
+                    <MultiTrigger.Conditions>
+                        <Condition Property="IsEnabled" Value="False" />
+                        <Condition Property="materialDesign:TextFieldAssist.HasOutlinedTextField" Value="False" />
+                    </MultiTrigger.Conditions>
+                    <Setter TargetName="templateRoot" Property="Opacity" Value="{x:Static materialDesign:Constants.TextBoxNotEnabledOpacity}" />
+                </MultiTrigger>
+
+                <MultiTrigger>
+                    <MultiTrigger.Conditions>
+                        <Condition Property="IsEnabled" Value="False" />
+                    </MultiTrigger.Conditions>
+                    <Setter TargetName="toggleButton" Property="BorderBrush" Value="Transparent" />
+                </MultiTrigger>
+
+                <MultiTrigger>
+                    <MultiTrigger.Conditions>
+                        <Condition Property="IsEnabled" Value="False" />
+                        <Condition Property="materialDesign:TextFieldAssist.HasOutlinedTextField" Value="True" />
+                    </MultiTrigger.Conditions>
+                    <Setter Property="BorderBrush" Value="{DynamicResource MaterialDesignTextAreaInactiveBorder}" />
+                    <Setter TargetName="PrefixTextBlock" Property="Opacity" Value="{x:Static materialDesign:Constants.TextBoxNotEnabledOpacity}" />
+                    <Setter TargetName="contentPresenter" Property="Opacity" Value="{x:Static materialDesign:Constants.TextBoxNotEnabledOpacity}" />
+                    <Setter TargetName="PART_EditableTextBox" Property="Opacity" Value="{x:Static materialDesign:Constants.TextBoxNotEnabledOpacity}" />
+                    <Setter TargetName="SuffixTextBlock" Property="Opacity" Value="{x:Static materialDesign:Constants.TextBoxNotEnabledOpacity}" />
+                    <Setter TargetName="PART_ClearButton" Property="Opacity" Value="{x:Static materialDesign:Constants.TextBoxNotEnabledOpacity}" />
+                    <Setter TargetName="HintWrapper" Property="Opacity">
+                        <Setter.Value>
+                            <Binding Path="(materialDesign:HintAssist.HintOpacity)"
+                             RelativeSource="{RelativeSource TemplatedParent}"
+                             Converter="{StaticResource MathMultiplyConverter}"
+                             ConverterParameter="{x:Static materialDesign:Constants.TextBoxNotEnabledOpacity}" />
+                        </Setter.Value>
+                    </Setter>
+                </MultiTrigger>
+
+
+                <!--IsKeyboardFocused-->
+                <Trigger Property="IsKeyboardFocused" Value="True">
+                    <Setter Property="BorderBrush" Value="{Binding Path=(materialDesign:TextFieldAssist.UnderlineBrush), RelativeSource={RelativeSource Self}}" />
+                </Trigger>
+
+                <Trigger Property="IsKeyboardFocusWithin" Value="True">
+                    <Setter Property="BorderBrush" Value="{Binding Path=(materialDesign:TextFieldAssist.UnderlineBrush), RelativeSource={RelativeSource Self}}" />
+                </Trigger>
+
+                <MultiTrigger>
+                    <MultiTrigger.Conditions>
+                        <Condition Property="IsKeyboardFocused" Value="True" />
+                        <Condition Property="materialDesign:TextFieldAssist.HasOutlinedTextField" Value="False" />
+                    </MultiTrigger.Conditions>
+                    <Setter TargetName="Underline" Property="IsActive" Value="True" />
+                </MultiTrigger>
+
+                <MultiTrigger>
+                    <MultiTrigger.Conditions>
+                        <Condition Property="IsKeyboardFocusWithin" Value="True" />
+                        <Condition Property="materialDesign:TextFieldAssist.HasOutlinedTextField" Value="True" />
+                        <Condition Property="materialDesign:HintAssist.IsFloating" Value="True" />
+                        <Condition SourceName="Hint" Property="IsHintInFloatingPosition" Value="True" />
+                    </MultiTrigger.Conditions>
+                    <Setter TargetName="HintWrapper" Property="Opacity" Value="1" />
+                </MultiTrigger>
+
+                <MultiTrigger>
+                    <MultiTrigger.Conditions>
+                        <Condition Property="IsKeyboardFocusWithin" Value="True" />
+                        <Condition SourceName="Hint" Property="IsContentNullOrEmpty" Value="False" />
+                        <Condition Property="materialDesign:HintAssist.IsFloating" Value="True" />
+                    </MultiTrigger.Conditions>
+                    <Setter TargetName="Hint" Property="Foreground" Value="{Binding Path=(materialDesign:HintAssist.Foreground), RelativeSource={RelativeSource TemplatedParent}}" />
+                    <Setter TargetName="Hint" Property="HintOpacity" Value="1" />
+                </MultiTrigger>
+
+                <MultiTrigger>
+                    <MultiTrigger.Conditions>
+                        <Condition Property="IsKeyboardFocusWithin" Value="True" />
+                        <Condition Property="materialDesign:HintAssist.IsFloating" Value="True" />
+                        <Condition SourceName="Hint" Property="IsHintInFloatingPosition" Value="True" />
+                    </MultiTrigger.Conditions>
+                    <Setter TargetName="Hint" Property="Foreground" Value="{Binding Path=(materialDesign:HintAssist.Foreground), RelativeSource={RelativeSource TemplatedParent}}" />
+                    <Setter TargetName="Hint" Property="HintOpacity" Value="1" />
+                </MultiTrigger>
+
+                <MultiTrigger>
+                    <MultiTrigger.Conditions>
+                        <Condition Property="IsKeyboardFocused" Value="True" />
+                        <Condition Property="materialDesign:TextFieldAssist.HasOutlinedTextField" Value="True" />
+                    </MultiTrigger.Conditions>
+                    <Setter TargetName="templateRoot" Property="Margin" Value="-1" />
+                    <Setter TargetName="templateRoot" Property="BorderThickness" Value="2" />
+                </MultiTrigger>
+
+
+                <!--IsDropDownOpen-->
+                <MultiTrigger>
+                    <MultiTrigger.Conditions>
+                        <Condition Property="IsDropDownOpen" Value="True" />
+                    </MultiTrigger.Conditions>
+                    <Setter TargetName="Underline" Property="IsActive" Value="True" />
+                </MultiTrigger>
+
+                <MultiTrigger>
+                    <MultiTrigger.Conditions>
+                        <Condition Property="IsDropDownOpen" Value="True" />
+                        <Condition Property="materialDesign:TextFieldAssist.HasOutlinedTextField" Value="True" />
+                    </MultiTrigger.Conditions>
+                    <Setter TargetName="templateRoot" Property="Margin" Value="-1" />
+                    <Setter TargetName="templateRoot" Property="BorderThickness" Value="2" />
+                    <Setter Property="BorderBrush" Value="{Binding Path=(materialDesign:TextFieldAssist.UnderlineBrush), RelativeSource={RelativeSource Self}}" />
+                </MultiTrigger>
+
+                <MultiTrigger>
+                    <MultiTrigger.Conditions>
+                        <Condition Property="IsDropDownOpen" Value="True" />
+                        <Condition SourceName="Hint" Property="IsContentNullOrEmpty" Value="False" />
+                    </MultiTrigger.Conditions>
+                    <Setter TargetName="Hint" Property="Foreground" Value="{Binding Path=(materialDesign:HintAssist.Foreground), RelativeSource={RelativeSource TemplatedParent}}" />
+                    <Setter TargetName="Hint" Property="HintOpacity" Value="1" />
+                </MultiTrigger>
+
+                <MultiTrigger>
+                    <MultiTrigger.Conditions>
+                        <Condition Property="IsDropDownOpen" Value="True" />
+                        <Condition SourceName="Hint" Property="IsContentNullOrEmpty" Value="False" />
+                        <Condition Property="materialDesign:TextFieldAssist.HasOutlinedTextField" Value="True" />
+                    </MultiTrigger.Conditions>
+                    <Setter TargetName="HintWrapper" Property="Opacity" Value="1" />
+                </MultiTrigger>
+
+
+                <!--IsMouseOver-->
+                <MultiTrigger>
+                    <MultiTrigger.Conditions>
+                        <Condition Property="IsMouseOver" Value="True" />
+                        <Condition Property="materialDesign:TextFieldAssist.HasOutlinedTextField" Value="False" />
+                    </MultiTrigger.Conditions>
+                    <Setter Property="BorderBrush" Value="{Binding Path=(materialDesign:TextFieldAssist.UnderlineBrush), RelativeSource={RelativeSource Self}}" />
+                    <Setter TargetName="Underline" Property="Background" Value="{Binding Path=(materialDesign:TextFieldAssist.UnderlineBrush), RelativeSource={RelativeSource Self}}" />
+                </MultiTrigger>
+
+                <MultiTrigger>
+                    <MultiTrigger.Conditions>
+                        <Condition Property="IsMouseOver" Value="True" />
+                        <Condition Property="materialDesign:TextFieldAssist.HasOutlinedTextField" Value="True" />
+                    </MultiTrigger.Conditions>
+                    <Setter TargetName="templateRoot" Property="Margin" Value="-1" />
+                    <Setter TargetName="templateRoot" Property="BorderThickness" Value="2" />
+                </MultiTrigger>
+
+                <MultiTrigger>
+                    <MultiTrigger.Conditions>
+                        <Condition Property="IsMouseOver" Value="True" />
+                        <Condition Property="materialDesign:TextFieldAssist.HasOutlinedTextField" Value="True" />
+                        <Condition Property="materialDesign:HintAssist.IsFloating" Value="True" />
+                        <Condition SourceName="Hint" Property="IsHintInFloatingPosition" Value="True" />
+                    </MultiTrigger.Conditions>
+                    <Setter TargetName="HintWrapper" Property="Opacity" Value="1" />
+                </MultiTrigger>
+
+
+                <!--Validation.HasError-->
+                <Trigger Property="Validation.HasError" Value="True">
+                    <Setter Property="BorderBrush" Value="{DynamicResource MaterialDesignValidationErrorBrush}" />
+                    <Setter TargetName="Underline" Property="Background" Value="{DynamicResource MaterialDesignValidationErrorBrush}" />
+                </Trigger>
+
+                <MultiTrigger>
+                    <MultiTrigger.Conditions>
+                        <Condition Property="Validation.HasError" Value="True" />
+                        <Condition Property="materialDesign:TextFieldAssist.HasOutlinedTextField" Value="True" />
+                    </MultiTrigger.Conditions>
+                    <Setter TargetName="templateRoot" Property="Margin" Value="-1" />
+                    <Setter TargetName="templateRoot" Property="BorderThickness" Value="2" />
+                    <Setter Property="BorderBrush" Value="{DynamicResource MaterialDesignValidationErrorBrush}" />
+                </MultiTrigger>
+
+
+                <!--PART_Popup.IsOpen-->
+                <MultiTrigger>
+                    <MultiTrigger.Conditions>
+                        <Condition SourceName="PART_Popup" Property="IsOpen" Value="True" />
+                        <Condition SourceName="PART_Popup" Property="materialDesign:ColorZoneAssist.Mode" Value="Standard" />
+                    </MultiTrigger.Conditions>
+                    <Setter TargetName="PART_Popup" Property="Tag" Value="{DynamicResource MaterialDesignPaper}" />
+                    <Setter TargetName="PART_Popup" Property="Background" Value="{Binding Tag, RelativeSource={RelativeSource Self}, Converter={StaticResource RemoveAlphaBrushConverter}}" />
+                    <Setter Property="TextElement.Foreground" Value="{DynamicResource SomeForeground}" />
+                </MultiTrigger>
+
+                <MultiTrigger>
+                    <MultiTrigger.Conditions>
+                        <Condition SourceName="PART_Popup" Property="IsOpen" Value="True" />
+                        <Condition SourceName="PART_Popup" Property="materialDesign:ColorZoneAssist.Mode" Value="Inverted" />
+                    </MultiTrigger.Conditions>
+                    <Setter TargetName="PART_Popup" Property="Tag" Value="{DynamicResource MaterialDesignBody}" />
+                    <Setter TargetName="PART_Popup" Property="Background" Value="{Binding Tag, RelativeSource={RelativeSource Self}, Converter={StaticResource RemoveAlphaBrushConverter}}" />
+                    <Setter Property="TextElement.Foreground" Value="{DynamicResource MaterialDesignPaper}" />
+                </MultiTrigger>
+
+                <MultiTrigger>
+                    <MultiTrigger.Conditions>
+                        <Condition SourceName="PART_Popup" Property="IsOpen" Value="True" />
+                        <Condition SourceName="PART_Popup" Property="materialDesign:ColorZoneAssist.Mode" Value="PrimaryLight" />
+                    </MultiTrigger.Conditions>
+                    <Setter TargetName="PART_Popup" Property="Tag" Value="{DynamicResource PrimaryHueLightBrush}" />
+                    <Setter TargetName="PART_Popup" Property="Background" Value="{Binding Tag, RelativeSource={RelativeSource Self}, Converter={StaticResource RemoveAlphaBrushConverter}}" />
+                    <Setter Property="TextElement.Foreground" Value="{DynamicResource PrimaryHueLightForegroundBrush}" />
+                </MultiTrigger>
+
+                <MultiTrigger>
+                    <MultiTrigger.Conditions>
+                        <Condition SourceName="PART_Popup" Property="IsOpen" Value="True" />
+                        <Condition SourceName="PART_Popup" Property="materialDesign:ColorZoneAssist.Mode" Value="PrimaryMid" />
+                    </MultiTrigger.Conditions>
+                    <Setter TargetName="PART_Popup" Property="Tag" Value="{DynamicResource PrimaryHueMidBrush}" />
+                    <Setter TargetName="PART_Popup" Property="Background" Value="{Binding Tag, RelativeSource={RelativeSource Self}, Converter={StaticResource RemoveAlphaBrushConverter}}" />
+                    <Setter Property="TextElement.Foreground" Value="{DynamicResource PrimaryHueMidForegroundBrush}" />
+                </MultiTrigger>
+
+                <MultiTrigger>
+                    <MultiTrigger.Conditions>
+                        <Condition SourceName="PART_Popup" Property="IsOpen" Value="True" />
+                        <Condition SourceName="PART_Popup" Property="materialDesign:ColorZoneAssist.Mode" Value="PrimaryDark" />
+                    </MultiTrigger.Conditions>
+                    <Setter TargetName="PART_Popup" Property="Tag" Value="{DynamicResource PrimaryHueDarkBrush}" />
+                    <Setter TargetName="PART_Popup" Property="Background" Value="{Binding Tag, RelativeSource={RelativeSource Self}, Converter={StaticResource RemoveAlphaBrushConverter}}" />
+                    <Setter Property="TextElement.Foreground" Value="{DynamicResource PrimaryHueDarkForegroundBrush}" />
+                </MultiTrigger>
+
+                <MultiTrigger>
+                    <MultiTrigger.Conditions>
+                        <Condition SourceName="PART_Popup" Property="IsOpen" Value="True" />
+                        <Condition SourceName="PART_Popup" Property="materialDesign:ColorZoneAssist.Mode" Value="SecondaryLight" />
+                    </MultiTrigger.Conditions>
+                    <Setter TargetName="PART_Popup" Property="Tag" Value="{DynamicResource SecondaryHueLightBrush}" />
+                    <Setter TargetName="PART_Popup" Property="Background" Value="{Binding Tag, RelativeSource={RelativeSource Self}, Converter={StaticResource RemoveAlphaBrushConverter}}" />
+                    <Setter Property="TextElement.Foreground" Value="{DynamicResource SecondaryHueLightForegroundBrush}" />
+                </MultiTrigger>
+
+                <MultiTrigger>
+                    <MultiTrigger.Conditions>
+                        <Condition SourceName="PART_Popup" Property="IsOpen" Value="True" />
+                        <Condition SourceName="PART_Popup" Property="materialDesign:ColorZoneAssist.Mode" Value="SecondaryMid" />
+                    </MultiTrigger.Conditions>
+                    <Setter TargetName="PART_Popup" Property="Tag" Value="{DynamicResource SecondaryHueMidBrush}" />
+                    <Setter TargetName="PART_Popup" Property="Background" Value="{Binding Tag, RelativeSource={RelativeSource Self}, Converter={StaticResource RemoveAlphaBrushConverter}}" />
+                    <Setter Property="TextElement.Foreground" Value="{DynamicResource SecondaryHueMidForegroundBrush}" />
+                </MultiTrigger>
+
+                <MultiTrigger>
+                    <MultiTrigger.Conditions>
+                        <Condition SourceName="PART_Popup" Property="IsOpen" Value="True" />
+                        <Condition SourceName="PART_Popup" Property="materialDesign:ColorZoneAssist.Mode" Value="SecondaryDark" />
+                    </MultiTrigger.Conditions>
+                    <Setter TargetName="PART_Popup" Property="Tag" Value="{DynamicResource SecondaryHueDarkBrush}" />
+                    <Setter TargetName="PART_Popup" Property="Background" Value="{Binding Tag, RelativeSource={RelativeSource Self}, Converter={StaticResource RemoveAlphaBrushConverter}}" />
+                    <Setter Property="TextElement.Foreground" Value="{DynamicResource SecondaryHueDarkForegroundBrush}" />
+                </MultiTrigger>
+
+                <MultiTrigger>
+                    <MultiTrigger.Conditions>
+                        <Condition SourceName="PART_Popup" Property="IsOpen" Value="True" />
+                        <Condition SourceName="PART_Popup" Property="materialDesign:ColorZoneAssist.Mode" Value="Light" />
+                    </MultiTrigger.Conditions>
+                    <Setter TargetName="PART_Popup" Property="Tag" Value="{DynamicResource MaterialDesignLightBackground}" />
+                    <Setter TargetName="PART_Popup" Property="Background" Value="{Binding Tag, RelativeSource={RelativeSource Self}, Converter={StaticResource RemoveAlphaBrushConverter}}" />
+                    <Setter Property="TextElement.Foreground" Value="{DynamicResource MaterialDesignLightForeground}" />
+                </MultiTrigger>
+
+                <MultiTrigger>
+                    <MultiTrigger.Conditions>
+                        <Condition SourceName="PART_Popup" Property="IsOpen" Value="True" />
+                        <Condition SourceName="PART_Popup" Property="materialDesign:ColorZoneAssist.Mode" Value="Dark" />
+                    </MultiTrigger.Conditions>
+                    <Setter TargetName="PART_Popup" Property="Tag" Value="{DynamicResource MaterialDesignDarkBackground}" />
+                    <Setter TargetName="PART_Popup" Property="Background" Value="{Binding Tag, RelativeSource={RelativeSource Self}, Converter={StaticResource RemoveAlphaBrushConverter}}" />
+                    <Setter Property="TextElement.Foreground" Value="{DynamicResource MaterialDesignDarkForeground}" />
+                </MultiTrigger>
+            </ControlTemplate.Triggers>
+        </ControlTemplate>
+
+        <Style TargetType="ComboBox" x:Key="ComboBoxWithHintTextStyle"
+               BasedOn="{StaticResource MaterialDesignFilledComboBox }">
+            <Setter Property="Background" Value="{DynamicResource SomeBackground}" />
+            <Setter Property="Foreground" Value="{DynamicResource SomeForeground}" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="materialDesign:HintAssist.HintOpacity" Value="100" />
+            <Setter Property="materialDesign:HintAssist.Foreground" Value="{DynamicResource Blue}" />
+            <Setter Property="materialDesign:TextFieldAssist.UnderlineBrush" Value="{DynamicResource Blue}" />
+            <Setter Property="Template" Value="{StaticResource ComboBoxWithHintTextTemplate}" />
+            <Setter Property="ItemContainerStyle" Value="{StaticResource ComboBoxItemContainerStyle}" />
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="{DynamicResource Item}" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        
     </UserControl.Resources>
     
     <StackPanel
@@ -41,12 +684,11 @@
 
             <smtx:XamlDisplay UniqueKey="comboboxes_1" Margin="0">
 
-                <ComboBox materialDesign:HintAssist.Hint="OS">
-                    <ComboBoxItem Content="Android"/>
-                    <ComboBoxItem Content="iOS"/>
-                    <ComboBoxItem Content="Linux"/>
-                    <ComboBoxItem Content="Windows"/>
-                </ComboBox>
+                <ComboBox Grid.Column="2"
+                          Style="{StaticResource ComboBoxWithHintTextStyle}"
+                          ItemsSource="{Binding ShortStringList}"
+                          IsEditable="True"
+                          materialDesign:HintAssist.Hint="SomeHint"/>
             </smtx:XamlDisplay>
             <smtx:XamlDisplay UniqueKey="comboboxes_2">
                 <ComboBox
